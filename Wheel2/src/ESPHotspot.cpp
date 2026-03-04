@@ -1,8 +1,28 @@
 #include "ESPHotspot.h"
 #include <Arduino.h>
+
+static float readFloatBE(WiFiClient &client) {
+    union {
+        float f;
+        uint8_t b[4];
+    } data;
+
+    // Read 4 bytes and flip order
+    client.readBytes(data.b, 4);
+
+    // Swap bytes: Java (BE) [0,1,2,3] -> ESP (LE) [3,2,1,0]
+    uint8_t temp;
+    temp = data.b[0];
+    data.b[0] = data.b[3];
+    data.b[3] = temp;
+    temp = data.b[1];
+    data.b[1] = data.b[2];
+    data.b[2] = temp;
+
+    return data.f;
+}
+
 namespace Robo {
-
-
     ESPHotspot::ESPHotspot(uint16_t port)
         : m_server(port), m_state(WiFiState::WAITING) {
         pinMode(LED_BUILTIN, OUTPUT);
@@ -33,29 +53,38 @@ namespace Robo {
         }
         updateLED();
     }
-    void ESPHotspot::updateLED() {
+
+    void ESPHotspot::updateLED() const {
         static uint32_t lastToggle = 0;
         uint32_t now = millis();
 
         switch (m_state) {
             case WiFiState::WAITING:
-                if (now - lastToggle > 1000) { // slow blink
+                // fast blink
+                if (now - lastToggle > 250) {
                     digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
                     lastToggle = now;
                 }
                 break;
 
             case WiFiState::CONNECTED:
-                digitalWrite(LED_BUILTIN, LOW);
+                // slow blink
+                if (now - lastToggle > 1000) {
+                    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+                    lastToggle = now;
+                }
                 break;
         }
     }
-    bool ESPHotspot::connected() {
-        return m_client && m_client.connected();
+
+    // Helper to convert Big-Endian (Java) to Little-Endian (ESP8266)
+
+
+    bool ESPHotspot::connected() const {
+        return m_state == WiFiState::CONNECTED;
     }
 
-    bool ESPHotspot::tryReadExact(uint8_t* buffer, size_t size) {
-
+    bool ESPHotspot::tryReadExact(float *buffer, int size) {
         if (!m_client || !m_client.connected())
             return false;
 
@@ -63,15 +92,12 @@ namespace Robo {
         if (m_client.available() < size)
             return false;
 
-        size_t received = 0;
-
-        while (received < size) {
-            int len = m_client.read(buffer + received, size - received);
-            if (len <= 0)
-                return false;
-            received += len;
+        for (int i = 0; i < size; i++) {
+            buffer[i] = readFloatBE(m_client);
         }
-
+        Serial.print(buffer[0]);
+        Serial.print(" | ");
+        Serial.println(buffer[1]);
         return true;
     }
 }

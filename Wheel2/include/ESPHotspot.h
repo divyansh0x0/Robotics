@@ -17,23 +17,16 @@ namespace Robo {
 
         void update();
 
-        void updateLED();
+        void updateLED() const;
 
-        bool connected();
-
-        template<typename T>
-        bool tryReceive(T *buffer, const size_t count) {
-            if (!m_client || !m_client.connected()) return false;
-            return tryReadExact(reinterpret_cast<uint8_t *>(buffer),
-                             sizeof(T) * count);
-        }
+        bool connected() const;
+        bool tryReadExact(float* buffer, int size);
 
     private:
         WiFiServer m_server;
         WiFiClient m_client;
         WiFiState m_state;
 
-        bool tryReadExact(uint8_t *buffer, size_t size);
     };
 }
 
