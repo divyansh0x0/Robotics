@@ -5,10 +5,19 @@
 #include "L298NController.h"
 #include <Arduino.h>
 
+#define MAX_PWM 600
+
+static int mapRange(float v, float in_min, float in_max, int out_min, int out_max) {
+    if (v < in_min) v = in_min;
+    if (v > in_max) v = in_max;
+
+    return (v - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
 static Robo::MotorDirection getDirection(float val) {
-    return val > 0
+    return val >= 0
                ? Robo::MotorDirection::FORWARD
-               : (val == 0 ? Robo::MotorDirection::STOP : Robo::MotorDirection::BACKWARD);
+               : Robo::MotorDirection::BACKWARD;
 }
 
 static float applyDeadzone(float v, float deadzone = 0.08f) {
@@ -85,24 +94,37 @@ namespace Robo {
     void L298NController::update() const {
         setMotorSignals(m_left_motor_pins, m_left_motor_status);
         setMotorSignals(m_right_motor_pins, m_right_motor_status);
+
+        // Serial.print(m_left_motor_status.speed);
+        // Serial.print(" | ");
+        // Serial.println(m_right_motor_status.speed);
     }
 
-    void L298NController::update(const float x, const float y) {
-        const float xFiltered = expo(applyDeadzone(x));
-        const float yFiltered = expo(applyDeadzone(y));
-        float leftSpeedFraction = yFiltered - xFiltered;
-        float rightSpeedFraction = yFiltered + xFiltered;
-        const float maxMag = fmax(fabs(leftSpeedFraction), fabs(rightSpeedFraction));
-        if (maxMag > 1.0) {
-            leftSpeedFraction /= maxMag;
-            rightSpeedFraction /= maxMag;
+    // X = xcos - ysin; Y = xsin - ycos
+
+    void Robo::L298NController::update(float x, float y) {
+        if (x == 0 && y == 0) {
+            setLeftMotor(0, MotorDirection::STOP);
+            setRightMotor(0, MotorDirection::STOP);
+            update();
+            return;
         }
+        const auto theta = atan2(abs(y),abs(x));
+        const auto mag = sqrt(x*x + y*y);
+        const auto t = theta/PI * 2;
+        double v1;
+        double v2;
+        if (x > 0) {
+            v1 = mag;
+            v2 = mag * t;
+        }
+        else {
 
-
-        const auto leftSpeed = static_cast<unsigned int>(abs(leftSpeedFraction * 1023));
-        const auto rightSpeed = static_cast<unsigned int>(abs(rightSpeedFraction * 1023));
-        setLeftMotor(leftSpeed, getDirection(leftSpeedFraction));
-        setRightMotor(rightSpeed, getDirection(rightSpeedFraction));
+            v1 = mag * t;
+            v2 = mag;
+        }
+        setLeftMotor((unsigned int)round((v1 * 1023)), getDirection(y));
+        setRightMotor((unsigned int)round((v2 * 1023)), getDirection(y));
         update();
     }
 }

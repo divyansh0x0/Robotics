@@ -95,9 +95,6 @@ namespace Robo {
         for (int i = 0; i < size; i++) {
             buffer[i] = readFloatBE(m_client);
         }
-        Serial.print(buffer[0]);
-        Serial.print(" | ");
-        Serial.println(buffer[1]);
         return true;
     }
 }
