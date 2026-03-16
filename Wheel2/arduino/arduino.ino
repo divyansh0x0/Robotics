@@ -341,11 +341,7 @@ void loop() {
 
     if (Hotspot.connected()) {
         if (Hotspot.tryReadExact(realBuffer, ValueCount)) {
-            Serial.print("x:");
-            Serial.print(realBuffer[0]);
-            Serial.print(",");
-            Serial.print("y:");
-            Serial.println(realBuffer[1]);
+
             MotorController.update(realBuffer[0], realBuffer[1]);
         }
     }

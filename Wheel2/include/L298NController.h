@@ -13,7 +13,7 @@ namespace Robo {
         STOP
     };
     struct MotorStatus {
-        unsigned int speed;
+        int speed;
         unsigned int correction;
         MotorDirection direction;
     };
@@ -31,12 +31,12 @@ namespace Robo {
         L298NPins m_right_motor_pins{};
         void update() const;
 
-        void setLeftMotor(unsigned int speed, MotorDirection direction);
+        void setLeftMotor(int speed, MotorDirection direction);
 
-        void setRightMotor(unsigned int speed, MotorDirection direction);
+        void setRightMotor( int speed, MotorDirection direction);
     public:
         void init(char ENA, char ENB, char IN1, char IN2, char IN3, char IN4);
-        void setCorrection(unsigned int left_motor_correction, unsigned int right_motor_correction);
+        void setCorrection(int left_motor_correction, int right_motor_correction);
         void update(float x, float y);
     };
 }

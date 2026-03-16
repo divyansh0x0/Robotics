@@ -2,7 +2,7 @@
 #include "ESPHotspot.h"
 #include "L298NController.h"
 
-#define SSID "ESP8266 2W 8"
+#define SSID "ESP8266 4W 5"
 #define PASSWORD "12345678"
 #define ValueCount 2
 

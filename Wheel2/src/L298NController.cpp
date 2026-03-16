@@ -5,13 +5,13 @@
 #include "L298NController.h"
 #include <Arduino.h>
 
-#define MAX_PWM 600
+#define MAX_PWM 255
 
-static int mapRange(float v, float in_min, float in_max, int out_min, int out_max) {
+static int mapRange(double v, float in_min, float in_max, int out_min, int out_max) {
     if (v < in_min) v = in_min;
     if (v > in_max) v = in_max;
 
-    return (v - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+    return round(v - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
 static Robo::MotorDirection getDirection(float val) {
@@ -76,19 +76,19 @@ namespace Robo {
         pinMode(IN4, OUTPUT);
     }
 
-    void L298NController::setCorrection(unsigned int left_motor_correction, unsigned int right_motor_correction) {
+    void L298NController::setCorrection(int left_motor_correction, int right_motor_correction) {
         m_left_motor_status.correction = left_motor_correction;
         m_right_motor_status.correction = right_motor_correction;
     }
 
-    void L298NController::setLeftMotor(const unsigned int speed, const MotorDirection direction) {
+    void L298NController::setLeftMotor(const int speed, const MotorDirection direction) {
         m_left_motor_status.direction = direction;
-        m_left_motor_status.speed = std::clamp(speed - m_left_motor_status.correction, 0u, 1023u);
+        m_left_motor_status.speed = std::clamp(speed, 0, MAX_PWM);
     }
 
-    void L298NController::setRightMotor(const unsigned int speed, const MotorDirection direction) {
+    void L298NController::setRightMotor(const  int speed, const MotorDirection direction) {
         m_right_motor_status.direction = direction;
-        m_right_motor_status.speed = std::clamp(speed - m_right_motor_status.correction, 0u, 1023u);
+        m_right_motor_status.speed = std::clamp(speed, 0, MAX_PWM);
     }
 
     void L298NController::update() const {
@@ -98,12 +98,18 @@ namespace Robo {
         // Serial.print(m_left_motor_status.speed);
         // Serial.print(" | ");
         // Serial.println(m_right_motor_status.speed);
+
+        Serial.print("left:");
+        Serial.print(m_left_motor_status.speed);
+        Serial.print(",");
+        Serial.print("right:");
+        Serial.println(m_right_motor_status.speed);
     }
 
     // X = xcos - ysin; Y = xsin - ycos
 
     void Robo::L298NController::update(float x, float y) {
-        if (x == 0 && y == 0) {
+        if (abs(x) <= 0.05 && abs(y) <= 0.05) {
             setLeftMotor(0, MotorDirection::STOP);
             setRightMotor(0, MotorDirection::STOP);
             update();
@@ -114,7 +120,9 @@ namespace Robo {
         const auto t = theta/PI * 2;
         double v1;
         double v2;
-        if (x > 0) {
+
+
+        if (x < 0) {
             v1 = mag;
             v2 = mag * t;
         }
@@ -123,8 +131,8 @@ namespace Robo {
             v1 = mag * t;
             v2 = mag;
         }
-        setLeftMotor((unsigned int)round((v1 * 1023)), getDirection(y));
-        setRightMotor((unsigned int)round((v2 * 1023)), getDirection(y));
+        setLeftMotor((int)round((v1 * MAX_PWM)), getDirection(y));
+        setRightMotor(( int)round((v2 * MAX_PWM)), getDirection(y));
         update();
     }
 }
