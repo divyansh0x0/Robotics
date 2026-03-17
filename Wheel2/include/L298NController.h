@@ -7,10 +7,10 @@
 
 namespace Robo {
 
-    enum class MotorDirection {
-        BACKWARD,
-        FORWARD,
-        STOP
+    enum class MotorDirection{
+        BACKWARD = -1,
+        FORWARD = 1,
+        STOP = 0
     };
     struct MotorStatus {
         int speed;

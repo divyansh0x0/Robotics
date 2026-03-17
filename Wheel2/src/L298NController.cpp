@@ -5,7 +5,38 @@
 #include "L298NController.h"
 #include <Arduino.h>
 
-#define MAX_PWM 255
+#define MAX_PWM 1023
+// ===== CONFIG =====
+#define DEADZONE 0.05f
+#define ACCEL_LIMIT 3.0f   // units per second (tune this)
+#define LOOP_TIME 0.02f          // loop time (50Hz)
+
+// current state (persist between loops)
+float vLeft_cur = 0;
+float vRight_cur = 0;
+
+// ===== HELPER =====
+float clamp(float x, float a, float b) {
+    if (x < a) return a;
+    if (x > b) return b;
+    return x;
+}
+
+float sign(float x) {
+    if (x > 0) return 1;
+    if (x < 0) return -1;
+    return 0;
+}
+
+float limitRate(float target, float current, float rate, float loopTime) {
+    float delta = target - current;
+    float maxStep = rate * loopTime;
+
+    if (delta > maxStep) delta = maxStep;
+    else if (delta < -maxStep) delta = -maxStep;
+
+    return current + delta;
+}
 
 static int mapRange(double v, float in_min, float in_max, int out_min, int out_max) {
     if (v < in_min) v = in_min;
@@ -74,6 +105,9 @@ namespace Robo {
         pinMode(IN2, OUTPUT);
         pinMode(IN3, OUTPUT);
         pinMode(IN4, OUTPUT);
+
+        analogWriteFreq(2000);
+        analogWriteRange(MAX_PWM);
     }
 
     void L298NController::setCorrection(int left_motor_correction, int right_motor_correction) {
@@ -86,7 +120,7 @@ namespace Robo {
         m_left_motor_status.speed = std::clamp(speed, 0, MAX_PWM);
     }
 
-    void L298NController::setRightMotor(const  int speed, const MotorDirection direction) {
+    void L298NController::setRightMotor(const int speed, const MotorDirection direction) {
         m_right_motor_status.direction = direction;
         m_right_motor_status.speed = std::clamp(speed, 0, MAX_PWM);
     }
@@ -94,45 +128,62 @@ namespace Robo {
     void L298NController::update() const {
         setMotorSignals(m_left_motor_pins, m_left_motor_status);
         setMotorSignals(m_right_motor_pins, m_right_motor_status);
-
-        // Serial.print(m_left_motor_status.speed);
-        // Serial.print(" | ");
-        // Serial.println(m_right_motor_status.speed);
-
         Serial.print("left:");
-        Serial.print(m_left_motor_status.speed);
+        Serial.print(static_cast<int>(m_left_motor_status.direction) * m_left_motor_status.speed);
         Serial.print(",");
         Serial.print("right:");
-        Serial.println(m_right_motor_status.speed);
+        Serial.println(static_cast<int>(m_right_motor_status.direction) * m_right_motor_status.speed);
     }
 
     // X = xcos - ysin; Y = xsin - ycos
 
     void Robo::L298NController::update(float x, float y) {
-        if (abs(x) <= 0.05 && abs(y) <= 0.05) {
-            setLeftMotor(0, MotorDirection::STOP);
-            setRightMotor(0, MotorDirection::STOP);
-            update();
-            return;
-        }
-        const auto theta = atan2(abs(y),abs(x));
-        const auto mag = sqrt(x*x + y*y);
-        const auto t = theta/PI * 2;
-        double v1;
-        double v2;
+        // assume x,y ∈ [-1,1]
 
+        float vL_arc, vR_arc;
+        float vL_tank, vR_tank;
 
-        if (x < 0) {
-            v1 = mag;
-            v2 = mag * t;
-        }
-        else {
+        // ===== ARC MODE =====
+        float mag = fabs(y);
 
-            v1 = mag * t;
-            v2 = mag;
+        float t = fabs(x) / (fabs(x) + fabs(y) + 1e-6f);
+        t = pow(t, 2.f); // smoothing
+
+        float vFast = mag;
+        float vSlow = mag * (1 - t);
+
+        if (x > 0) {
+            vL_arc = vFast;
+            vR_arc = vSlow;
+        } else {
+            vL_arc = vSlow;
+            vR_arc = vFast;
         }
-        setLeftMotor((int)round((v1 * MAX_PWM)), getDirection(y));
-        setRightMotor(( int)round((v2 * MAX_PWM)), getDirection(y));
+
+        float dir = sign(y);
+        vL_arc *= dir;
+        vR_arc *= dir;
+
+        // ===== TANK MODE =====
+        vL_tank = x;
+        vR_tank = -x;
+
+        // ===== BLENDING =====
+        float alpha = clamp(fabs(y)*2.0f, 0.0f, 1.0f);
+
+        float vL_target = alpha * vL_arc + (1 - alpha) * vL_tank;
+        float vR_target = alpha * vR_arc + (1 - alpha) * vR_tank;
+
+        // ===== ACCEL LIMITING =====
+        vLeft_cur = limitRate(vL_target, vLeft_cur, ACCEL_LIMIT, LOOP_TIME);
+        vRight_cur = limitRate(vR_target, vRight_cur, ACCEL_LIMIT, LOOP_TIME);
+
+        // ===== PWM OUTPUT =====
+        int pwmLeft = (int) (vLeft_cur * MAX_PWM);
+        int pwmRight = (int) (vRight_cur * MAX_PWM);
+
+        setLeftMotor(abs(pwmLeft), getDirection(vLeft_cur));
+        setRightMotor(abs(pwmRight), getDirection(vRight_cur));
         update();
     }
 }
