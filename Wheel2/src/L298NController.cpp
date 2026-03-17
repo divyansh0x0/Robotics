@@ -10,7 +10,7 @@
 #define DEADZONE 0.05f
 #define ACCEL_LIMIT 3.0f   // units per second (tune this)
 #define LOOP_TIME 0.02f          // loop time (50Hz)
-
+#define INVERTED
 // current state (persist between loops)
 float vLeft_cur = 0;
 float vRight_cur = 0;
@@ -106,7 +106,7 @@ namespace Robo {
         pinMode(IN3, OUTPUT);
         pinMode(IN4, OUTPUT);
 
-        analogWriteFreq(2000);
+        analogWriteFreq(1000);
         analogWriteRange(MAX_PWM);
     }
 
@@ -147,7 +147,7 @@ namespace Robo {
         float mag = fabs(y);
 
         float t = fabs(x) / (fabs(x) + fabs(y) + 1e-6f);
-        t = pow(t, 2.f); // smoothing
+        t = pow(t, 1.f); // smoothing
 
         float vFast = mag;
         float vSlow = mag * (1 - t);
@@ -169,21 +169,25 @@ namespace Robo {
         vR_tank = -x;
 
         // ===== BLENDING =====
-        float alpha = clamp(fabs(y)*2.0f, 0.0f, 1.0f);
+        float alpha = clamp(fabs(y), 0.0f, 1.0f);
 
         float vL_target = alpha * vL_arc + (1 - alpha) * vL_tank;
         float vR_target = alpha * vR_arc + (1 - alpha) * vR_tank;
 
         // ===== ACCEL LIMITING =====
-        vLeft_cur = limitRate(vL_target, vLeft_cur, ACCEL_LIMIT, LOOP_TIME);
-        vRight_cur = limitRate(vR_target, vRight_cur, ACCEL_LIMIT, LOOP_TIME);
-
+        // vLeft_cur = limitRate(vL_target, vLeft_cur, ACCEL_LIMIT, LOOP_TIME);
+        // vRight_cur = limitRate(vR_target, vRight_cur, ACCEL_LIMIT, LOOP_TIME);
+        vLeft_cur = vL_target;
+        vRight_cur = vR_target;
         // ===== PWM OUTPUT =====
         int pwmLeft = (int) (vLeft_cur * MAX_PWM);
         int pwmRight = (int) (vRight_cur * MAX_PWM);
-
+#ifdef INVERTED
+        setLeftMotor(abs(pwmRight), getDirection(vRight_cur));
+        setRightMotor(abs(pwmLeft), getDirection(vLeft_cur));
+#else
         setLeftMotor(abs(pwmLeft), getDirection(vLeft_cur));
         setRightMotor(abs(pwmRight), getDirection(vRight_cur));
-        update();
+#endif
     }
 }
