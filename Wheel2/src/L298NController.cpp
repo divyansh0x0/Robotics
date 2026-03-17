@@ -189,5 +189,6 @@ namespace Robo {
         setLeftMotor(abs(pwmLeft), getDirection(vLeft_cur));
         setRightMotor(abs(pwmRight), getDirection(vRight_cur));
 #endif
+        update();
     }
 }
