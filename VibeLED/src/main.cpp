@@ -5,7 +5,7 @@
 #define PASSWORD "@g@l@xY@55"
 #define ValueCount 2
 #define LED_PIN D2
-
+#define ESP_ID 1
 Robo::ESPWifi wifi{8080};
 float realBuffer[ValueCount];
 
@@ -29,7 +29,6 @@ void setLEDState(int state) {
         default:
             digitalWrite(LED_PIN, HIGH);
             break;
-
     }
 }
 
@@ -41,11 +40,16 @@ void loop() {
         if (wifi.tryReadExact(realBuffer, ValueCount)) {
             // int state = (int) round(realBuffer[1]);
             // setLEDState(state);
-
+            int id = (int) round(realBuffer[0]);
+            int state = (int) round(realBuffer[1]);
             Serial.print("id:");
             Serial.print(realBuffer[0]);
             Serial.print(", state:");
             Serial.println(realBuffer[1]);
+            if (id == ESP_ID) {
+                setLEDState(state);
+
+            }
         }
     } else {
         setLEDState(0);
