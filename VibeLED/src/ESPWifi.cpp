@@ -21,9 +21,8 @@ static float readFloatBE_UDP(uint8_t *buf) {
 // ================= IMPLEMENTATION =================
 
 namespace Robo {
-
     ESPWifi::ESPWifi(uint16_t port)
-        : m_port(port), m_state(WiFiState::WAITING) {
+        : m_port(port), m_state(WiFiState::WAITING), m_pendingPacketSize(0) {
         pinMode(LED_BUILTIN, OUTPUT);
     }
 
@@ -50,22 +49,14 @@ namespace Robo {
     }
 
     void ESPWifi::update() {
-
         if (WiFi.status() != WL_CONNECTED) {
             m_state = WiFiState::WAITING;
             updateLED();
             return;
         }
-
-        // Always "connected" in UDP mode
         m_state = WiFiState::CONNECTED;
 
-        // Optional debug: check if packet arrived
-        int packetSize = m_udp.parsePacket();
-        if (packetSize) {
-            Serial.print("UDP packet received: ");
-            Serial.println(packetSize);
-        }
+        m_pendingPacketSize = m_udp.parsePacket(); // ← store it here
 
         updateLED();
     }
@@ -75,7 +66,6 @@ namespace Robo {
         uint32_t now = millis();
 
         switch (m_state) {
-
             case WiFiState::WAITING:
                 // Fast blink (not connected to WiFi)
                 if (now - lastToggle > 250) {
@@ -100,14 +90,22 @@ namespace Robo {
     }
 
     bool ESPWifi::tryReadExact(float *buffer, int size) {
+        if (m_pendingPacketSize <= 0) return false;
 
-        int packetSize = m_udp.parsePacket();
+        int packetSize = m_pendingPacketSize;
+        m_pendingPacketSize = 0; // ← consume it
 
-        if (packetSize < size * 4)
+        Serial.print("Packet size: ");
+        Serial.println(packetSize);
+
+        if (packetSize < size * 4) {
+            Serial.println("Packet too small");
             return false;
+        }
 
         uint8_t buf[128];
-        m_udp.read(buf, size * 4);
+        int len = m_udp.read(buf, sizeof(buf));
+        if (len < size * 4) return false;
 
         for (int i = 0; i < size; i++) {
             buffer[i] = readFloatBE_UDP(&buf[i * 4]);
@@ -115,5 +113,4 @@ namespace Robo {
 
         return true;
     }
-
 } // namespace Robo

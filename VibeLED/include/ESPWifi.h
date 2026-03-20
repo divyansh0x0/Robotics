@@ -2,7 +2,7 @@
 #define ESP_WIFI_H
 
 #include <ESP8266WiFi.h>
-
+#include <WiFiUdp.h>   // <-- add this line
 namespace Robo {
 
     enum class WiFiState {
@@ -20,12 +20,11 @@ namespace Robo {
         bool tryReadExact(float *buffer, int size);
 
     private:
-        WiFiServer m_server;
         WiFiClient m_client;
         WiFiUDP m_udp;              // ✅ NEW
         uint16_t m_port;            // ✅ NEW
         WiFiState m_state;
-
+        int m_pendingPacketSize;
         void updateLED() const;
     };
 
