@@ -28,15 +28,4 @@ pub fn show(ui: &mut Ui, state: &mut UiState, cmd_tx: &Sender<Cmd>) {
             }
         }
     });
-
-    ui.separator();
-
-    ui.horizontal(|ui| {
-        if ui.button("⏸  Pause").clicked() {
-            let _ = cmd_tx.try_send(Cmd::Pause);
-        }
-        if ui.button("⏹  Stop").clicked() {
-            let _ = cmd_tx.try_send(Cmd::Stop);
-        }
-    });
 }

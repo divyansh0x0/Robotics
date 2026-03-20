@@ -20,7 +20,9 @@ pub struct Track {
 pub enum Cmd {
     Play(usize),            // index into tracks vec
     Pause,
+    Resume,
     Stop,
+    Seek(u64),
     CriticalStop { total: u32, required: u32 },
     SetTotalEsps(u32),
     SetRequiredEsps(u32),
@@ -48,6 +50,8 @@ pub struct UiState {
     pub tracks:         Vec<Track>,
     pub current_track:  Option<usize>,
     pub playing:        bool,
+    pub playback_pos_ms: u64,
+    pub playback_dur_ms: u64,
     pub total_esps:     u32,
     pub required_esps:  u32,
     pub last_signals:   Vec<EspSignal>,
@@ -61,6 +65,8 @@ impl Default for UiState {
             tracks: Vec::new(),
             current_track: None,
             playing: false,
+            playback_pos_ms: 0,
+            playback_dur_ms: 0,
             total_esps: 10,
             required_esps: 3,
             last_signals: Vec::new(),

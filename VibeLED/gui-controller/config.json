@@ -3,5 +3,5 @@
   "udp_port": 8080,
   "broadcast_ip": "255.255.255.255",
   "total_esps": 10,
-  "required_esps": 3
+  "required_esps": 9
 }

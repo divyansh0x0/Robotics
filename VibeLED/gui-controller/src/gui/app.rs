@@ -1,6 +1,6 @@
 use crate::state::{AppEvent, Cmd, UiState};
 use crate::config::Config;
-use crate::gui::panels::{esp_config, esp_grid, top_bar, track_list};
+use crate::gui::panels::{esp_config, esp_grid, top_bar, track_list, playback_bar};
 use std::time::Duration;
 use tokio::sync::mpsc::{Receiver, Sender};
 
@@ -35,9 +35,12 @@ impl ControllerApp {
                     self.state.playing = false;
                     self.state.status_text = "Stopped".into();
                 }
+                AppEvent::PlaybackTick { position_ms, duration_ms } => {
+                    self.state.playback_pos_ms = position_ms;
+                    self.state.playback_dur_ms = duration_ms;
+                }
                 AppEvent::EspFired(sigs) => self.state.last_signals = sigs,
                 AppEvent::Error(e) => self.state.error = Some(e),
-                _ => {}
             }
         }
     }
@@ -50,6 +53,10 @@ impl eframe::App for ControllerApp {
         egui::TopBottomPanel::top("top_bar")
             .exact_height(60.0)
             .show(ctx, |ui| top_bar::show(ui, &self.state, &self.cmd_tx));
+
+        egui::TopBottomPanel::bottom("playback_bar")
+            .exact_height(60.0)
+            .show(ctx, |ui| playback_bar::show(ui, &mut self.state, &self.cmd_tx));
 
         egui::SidePanel::left("track_list")
             .resizable(true)
