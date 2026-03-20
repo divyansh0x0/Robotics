@@ -27,8 +27,9 @@ impl ControllerApp {
         while let Ok(ev) = self.event_rx.try_recv() {
             match ev {
                 AppEvent::TracksLoaded(t) => self.state.tracks = t,
-                AppEvent::PlaybackStarted(n) => {
+                AppEvent::PlaybackStarted(idx, n) => {
                     self.state.playing = true;
+                    self.state.current_track = Some(idx);
                     self.state.status_text = format!("Playing: {}", n);
                 }
                 AppEvent::PlaybackStopped => {

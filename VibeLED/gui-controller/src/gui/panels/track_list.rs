@@ -5,12 +5,15 @@ use tokio::sync::mpsc::Sender;
 pub fn show(ui: &mut Ui, state: &mut UiState, cmd_tx: &Sender<Cmd>) {
     ui.horizontal(|ui| {
         ui.heading("Tracks");
-        if ui.button("📁 Open Folder").clicked() {
+        if ui.button("📁 Folder").on_hover_text("Open folder").clicked() {
             if let Some(path) = rfd::FileDialog::new().pick_folder() {
                 let _ = cmd_tx.try_send(Cmd::ChangeMusicFolder(path.to_string_lossy().to_string()));
             }
         }
-        if ui.button("⟳").clicked() {
+        if ui.button("🎲").on_hover_text("Play random song").clicked() {
+            let _ = cmd_tx.try_send(Cmd::PlayRandom);
+        }
+        if ui.button("⟳").on_hover_text("Refresh tracks").clicked() {
             let _ = cmd_tx.try_send(Cmd::RefreshTracks);
         }
     });

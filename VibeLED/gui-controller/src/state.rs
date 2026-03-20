@@ -23,6 +23,7 @@ pub enum Cmd {
     Resume,
     Stop,
     Seek(u64),
+    PlayRandom,
     CriticalStop { total: u32, required: u32 },
     SetTotalEsps(u32),
     SetRequiredEsps(u32),
@@ -37,7 +38,7 @@ pub enum Cmd {
 // Events the worker thread sends back to the GUI
 pub enum AppEvent {
     TracksLoaded(Vec<Track>),
-    PlaybackStarted(String),
+    PlaybackStarted(usize, String),
     PlaybackStopped,
     PlaybackTick { position_ms: u64, duration_ms: u64 }, // future: music sync
     EspFired(Vec<EspSignal>),

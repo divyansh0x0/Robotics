@@ -6,6 +6,7 @@ use crate::state::{AppEvent, Cmd, Track};
 use std::path::Path;
 use tokio::sync::mpsc::{Receiver, Sender};
 use tokio::time::{interval, Duration};
+use rand::Rng;
 
 pub async fn run(
     mut cmd_rx: Receiver<Cmd>,
@@ -38,10 +39,26 @@ pub async fn run(
                                     match player.play(&track.path) {
                                         Ok(dur) => {
                                             current_duration = dur;
-                                            let _ = event_tx.send(AppEvent::PlaybackStarted(track.name.clone())).await;
+                                            let _ = event_tx.send(AppEvent::PlaybackStarted(idx, track.name.clone())).await;
                                         }
                                         Err(e) => {
                                             let _ = event_tx.send(AppEvent::Error(e)).await;
+                                        }
+                                    }
+                                }
+                            }
+                            Cmd::PlayRandom => {
+                                if !tracks.is_empty() {
+                                    let idx = rand::thread_rng().gen_range(0..tracks.len());
+                                    if let Some(track) = tracks.get(idx) {
+                                        match player.play(&track.path) {
+                                            Ok(dur) => {
+                                                current_duration = dur;
+                                                let _ = event_tx.send(AppEvent::PlaybackStarted(idx, track.name.clone())).await;
+                                            }
+                                            Err(e) => {
+                                                let _ = event_tx.send(AppEvent::Error(e)).await;
+                                            }
                                         }
                                     }
                                 }
