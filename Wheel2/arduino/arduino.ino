@@ -7,7 +7,7 @@
 #define ESP_HOTSPOT_H
 
 namespace Robo {
-    enum class WiFiState {
+    enum class HotspotState {
         CONNECTED,
         WAITING,
     };
@@ -28,7 +28,7 @@ namespace Robo {
     private:
         WiFiServer m_server;
         WiFiClient m_client;
-        WiFiState m_state;
+        HotspotState m_state;
 
     };
 }
@@ -103,7 +103,7 @@ static float readFloatBE(WiFiClient &client) {
 
 namespace Robo {
     ESPHotspot::ESPHotspot(uint16_t port)
-        : m_server(port), m_state(WiFiState::WAITING) {
+        : m_server(port), m_state(HotspotState::WAITING) {
         pinMode(LED_BUILTIN, OUTPUT);
     }
 
@@ -114,18 +114,18 @@ namespace Robo {
 
     void ESPHotspot::update() {
         switch (m_state) {
-            case WiFiState::WAITING: {
+            case HotspotState::WAITING: {
                 if (WiFiClient newClient = m_server.accept()) {
                     m_client = newClient;
-                    m_state = WiFiState::CONNECTED;
+                    m_state = HotspotState::CONNECTED;
                     Serial.println("Client connected");
                 }
                 break;
             }
-            case WiFiState::CONNECTED: {
+            case HotspotState::CONNECTED: {
                 if (!m_client.connected()) {
                     m_client.stop();
-                    m_state = WiFiState::WAITING;
+                    m_state = HotspotState::WAITING;
                     Serial.println("Client disconnected");
                 }
             }
@@ -138,7 +138,7 @@ namespace Robo {
         uint32_t now = millis();
 
         switch (m_state) {
-            case WiFiState::WAITING:
+            case HotspotState::WAITING:
                 // fast blink
                 if (now - lastToggle > 250) {
                     digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
@@ -146,7 +146,7 @@ namespace Robo {
                 }
                 break;
 
-            case WiFiState::CONNECTED:
+            case HotspotState::CONNECTED:
                 // slow blink
                 if (now - lastToggle > 1000) {
                     digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
@@ -160,7 +160,7 @@ namespace Robo {
 
 
     bool ESPHotspot::connected() const {
-        return m_state == WiFiState::CONNECTED;
+        return m_state == HotspotState::CONNECTED;
     }
 
     bool ESPHotspot::tryReadExact(float *buffer, int size) {

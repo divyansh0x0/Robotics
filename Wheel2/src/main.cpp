@@ -2,8 +2,8 @@
 #include "ESPHotspot.h"
 #include "L298NController.h"
 
-#define SSID "ESP8266 4W 4"
-#define PASSWORD "cncb4"
+#define SSID "ESP8266 2W 6"
+#define PASSWORD "snsbot06"
 #define ValueCount 2
 
 #define ENA D1
@@ -14,18 +14,17 @@
 #define IN4 D6
 
 float realBuffer[ValueCount];
-float tempBuffer[ValueCount];
 Robo::ESPHotspot Hotspot;
 Robo::L298NController MotorController;
-
+#define CHANNEL 5
 void setup() {
     memset(realBuffer, 0, sizeof(float) * ValueCount);
-    memset(tempBuffer, 0, sizeof(float) * ValueCount);
 
     Serial.begin(115200);
 
     MotorController.init(ENA, ENB, IN1, IN2, IN3, IN4);
-    Hotspot.start(SSID, PASSWORD);
+    MotorController.setCorrection(0.7f, 0.9f);
+    Hotspot.start(SSID, PASSWORD, CHANNEL);
 
     Serial.println("Started Hotspot");
 }

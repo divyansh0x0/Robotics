@@ -79,7 +79,7 @@ static void setMotorSignals(Robo::L298NPins motor_pins, Robo::MotorStatus status
             break;
     }
 
-    analogWrite(motor_pins.PWM, status.speed);
+    analogWrite(motor_pins.PWM, static_cast<int>(round(status.correction * status.speed)));
 }
 
 namespace Robo {
@@ -110,9 +110,15 @@ namespace Robo {
         analogWriteRange(MAX_PWM);
     }
 
-    void L298NController::setCorrection(int left_motor_correction, int right_motor_correction) {
+    void L298NController::setCorrection(float left_motor_correction, float right_motor_correction) {
+#ifdef INVERTED
         m_left_motor_status.correction = left_motor_correction;
         m_right_motor_status.correction = right_motor_correction;
+#else
+        m_left_motor_status.correction = right_motor_correction;
+        m_right_motor_status.correction = left_motor_correction;
+        #endif
+
     }
 
     void L298NController::setLeftMotor(const int speed, const MotorDirection direction) {
@@ -169,7 +175,7 @@ namespace Robo {
         vR_tank = -x;
 
         // ===== BLENDING =====
-        float alpha = clamp(fabs(y), 0.0f, 1.0f);
+        float alpha = clamp(fabs(y) * 2.0F, 0.0f, 1.0f);
 
         float vL_target = alpha * vL_arc + (1 - alpha) * vL_tank;
         float vR_target = alpha * vR_arc + (1 - alpha) * vR_tank;

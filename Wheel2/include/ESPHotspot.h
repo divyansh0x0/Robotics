@@ -4,7 +4,7 @@
 #include <ESP8266WiFi.h>
 
 namespace Robo {
-    enum class WiFiState {
+    enum class HotspotState {
         CONNECTED,
         WAITING,
     };
@@ -13,7 +13,7 @@ namespace Robo {
     public:
         explicit ESPHotspot(uint16_t port = 5000);
 
-        void start(const char *ssid, const char *password);
+        void start(const char *ssid, const char *password, int channel);
 
         void update();
 
@@ -25,7 +25,7 @@ namespace Robo {
     private:
         WiFiServer m_server;
         WiFiClient m_client;
-        WiFiState m_state;
+        HotspotState m_state;
 
     };
 }

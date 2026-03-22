@@ -14,7 +14,7 @@ namespace Robo {
     };
     struct MotorStatus {
         int speed;
-        unsigned int correction;
+        float correction;
         MotorDirection direction;
     };
 
@@ -25,8 +25,8 @@ namespace Robo {
     };
 
     class L298NController {
-        MotorStatus m_left_motor_status{0, 0, MotorDirection::STOP};
-        MotorStatus m_right_motor_status{0, 0,MotorDirection::STOP};
+        MotorStatus m_left_motor_status{0, 1.0f, MotorDirection::STOP};
+        MotorStatus m_right_motor_status{0, 1.0f,MotorDirection::STOP};
         L298NPins m_left_motor_pins{};
         L298NPins m_right_motor_pins{};
         void update() const;
@@ -36,7 +36,7 @@ namespace Robo {
         void setRightMotor( int speed, MotorDirection direction);
     public:
         void init(char ENA, char ENB, char IN1, char IN2, char IN3, char IN4);
-        void setCorrection(int left_motor_correction, int right_motor_correction);
+        void setCorrection(float left_motor_correction, float right_motor_correction);
         void update(float x, float y);
     };
 }
