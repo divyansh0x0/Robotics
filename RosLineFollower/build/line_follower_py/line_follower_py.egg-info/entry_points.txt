@@ -1,0 +1,2 @@
+[console_scripts]
+follower = line_follower_py.follower:main

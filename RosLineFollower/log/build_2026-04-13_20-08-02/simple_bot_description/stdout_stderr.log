@@ -1,0 +1,18 @@
+-- Install configuration: ""
+-- Execute custom install script
+-- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/urdf/simple_bot.urdf
+-- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/ament_index/resource_index/package_run_dependencies/simple_bot_description
+-- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/ament_index/resource_index/parent_prefix_path/simple_bot_description
+-- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/environment/ament_prefix_path.sh
+-- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/environment/ament_prefix_path.dsv
+-- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/environment/path.sh
+-- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/environment/path.dsv
+-- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/local_setup.bash
+-- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/local_setup.sh
+-- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/local_setup.zsh
+-- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/local_setup.dsv
+-- Symlinking: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/package.dsv
+-- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/ament_index/resource_index/packages/simple_bot_description
+-- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/cmake/simple_bot_descriptionConfig.cmake
+-- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/cmake/simple_bot_descriptionConfig-version.cmake
+-- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/package.xml

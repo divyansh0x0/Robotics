@@ -1,0 +1,16 @@
+/home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/urdf/simple_bot.urdf
+/home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/ament_index/resource_index/package_run_dependencies/simple_bot_description
+/home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/ament_index/resource_index/parent_prefix_path/simple_bot_description
+/home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/environment/ament_prefix_path.sh
+/home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/environment/ament_prefix_path.dsv
+/home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/environment/path.sh
+/home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/environment/path.dsv
+/home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/local_setup.bash
+/home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/local_setup.sh
+/home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/local_setup.zsh
+/home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/local_setup.dsv
+/home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/package.dsv
+/home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/ament_index/resource_index/packages/simple_bot_description
+/home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/cmake/simple_bot_descriptionConfig.cmake
+/home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/cmake/simple_bot_descriptionConfig-version.cmake
+/home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/package.xml

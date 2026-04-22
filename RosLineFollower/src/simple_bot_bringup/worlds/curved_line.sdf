@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+    <world name="line_world">
+
+        <physics type="ode">...</physics>
+
+        <light name="sun" type="directional">...</light>
+        <light name="fill" type="directional">...</light>
+
+        <!-- Dark gray ground (collision + visual) -->
+        <model name="ground">
+            <static>true</static>
+            <link name="link">
+                <collision name="col">
+                    <geometry><plane>...</plane></geometry>
+                </collision>
+                <visual name="vis">
+                    <geometry><plane>...</plane></geometry>
+                    <material>
+                        <ambient>0.15 0.15 0.15 1</ambient>   <!-- dark gray -->
+                        <diffuse>0.15 0.15 0.15 1</diffuse>
+                    </material>
+                </visual>
+            </link>
+        </model>
+
+        <!-- White line (80 box segments forming a sine wave) -->
+        <model name="white_line">
+            <static>true</static>
+            <link name="link">
+                <visual name="seg0">
+                    <pose>-0.8750 -0.6193 0.003 0 0 -0.5326</pose>
+                    <geometry><box><size>0.275 0.16 0.006</size></box></geometry>
+                    <material>
+                        <ambient>1.0 1.0 1.0 1</ambient>   <!-- bright white -->
+                        <diffuse>1.0 1.0 1.0 1</diffuse>
+                    </material>
+                </visual>
+                <!-- ... 79 more segments ... -->
+            </link>
+        </model>
+
+    </world>
+</sdf>

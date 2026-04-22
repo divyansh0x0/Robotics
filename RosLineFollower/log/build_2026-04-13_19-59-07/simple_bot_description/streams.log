@@ -1,0 +1,22 @@
+[0.133s] Invoking command in '/home/divyansh/Projects/Robotics/RosLineFollower/build/simple_bot_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/divyansh/Projects/Robotics/RosLineFollower/install/line_follower_py:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.archlinux.org /usr/bin/cmake --build /home/divyansh/Projects/Robotics/RosLineFollower/build/simple_bot_description -- -j12 -l12
+[0.163s] Invoked command in '/home/divyansh/Projects/Robotics/RosLineFollower/build/simple_bot_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/divyansh/Projects/Robotics/RosLineFollower/install/line_follower_py:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.archlinux.org /usr/bin/cmake --build /home/divyansh/Projects/Robotics/RosLineFollower/build/simple_bot_description -- -j12 -l12
+[0.170s] Invoking command in '/home/divyansh/Projects/Robotics/RosLineFollower/build/simple_bot_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/divyansh/Projects/Robotics/RosLineFollower/install/line_follower_py:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.archlinux.org /usr/bin/cmake --install /home/divyansh/Projects/Robotics/RosLineFollower/build/simple_bot_description
+[0.177s] -- Install configuration: ""
+[0.177s] -- Execute custom install script
+[0.177s] -- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/urdf/simple_bot.urdf
+[0.177s] -- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/ament_index/resource_index/package_run_dependencies/simple_bot_description
+[0.178s] -- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/ament_index/resource_index/parent_prefix_path/simple_bot_description
+[0.178s] -- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/environment/ament_prefix_path.sh
+[0.178s] -- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/environment/ament_prefix_path.dsv
+[0.178s] -- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/environment/path.sh
+[0.178s] -- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/environment/path.dsv
+[0.178s] -- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/local_setup.bash
+[0.178s] -- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/local_setup.sh
+[0.179s] -- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/local_setup.zsh
+[0.179s] -- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/local_setup.dsv
+[0.179s] -- Symlinking: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/package.dsv
+[0.188s] -- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/ament_index/resource_index/packages/simple_bot_description
+[0.188s] -- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/cmake/simple_bot_descriptionConfig.cmake
+[0.188s] -- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/cmake/simple_bot_descriptionConfig-version.cmake
+[0.188s] -- Up-to-date symlink: /home/divyansh/Projects/Robotics/RosLineFollower/install/simple_bot_description/share/simple_bot_description/package.xml
+[0.189s] Invoked command in '/home/divyansh/Projects/Robotics/RosLineFollower/build/simple_bot_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/divyansh/Projects/Robotics/RosLineFollower/install/line_follower_py:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.archlinux.org /usr/bin/cmake --install /home/divyansh/Projects/Robotics/RosLineFollower/build/simple_bot_description

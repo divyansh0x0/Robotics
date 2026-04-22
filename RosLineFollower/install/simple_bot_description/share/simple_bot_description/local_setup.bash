@@ -1,0 +1,1 @@
+/home/divyansh/Projects/Robotics/RosLineFollower/build/simple_bot_description/ament_cmake_environment_hooks/local_setup.bash
