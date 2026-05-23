@@ -6,6 +6,7 @@
 #define WHEEL2_TB6612FNGCONTROLLER_H
 
 #include <stdint.h>
+#include "stm32f1xx_hal.h"
 
 namespace Robo {
 
@@ -22,9 +23,12 @@ namespace Robo {
     };
 
     struct MotorPins {
-        uint8_t PWM;
-        uint8_t IN1;
-        uint8_t IN2;
+        TIM_HandleTypeDef* htim;
+        uint32_t           channel;
+        GPIO_TypeDef*      in1_port;
+        uint16_t           in1_pin;
+        GPIO_TypeDef*      in2_port;
+        uint16_t           in2_pin;
     };
 
     class TB6612FNGController {
@@ -32,17 +36,20 @@ namespace Robo {
         MotorStatus m_right_motor_status{0, 1.0f, MotorDirection::STOP};
         MotorPins   m_left_motor_pins{};
         MotorPins   m_right_motor_pins{};
-        uint8_t     m_stdby_pin{};
+        GPIO_TypeDef* m_stdby_port;
+        uint16_t      m_stdby_pin;
 
         void update() const;
         void setLeftMotor(int speed, MotorDirection direction);
         void setRightMotor(int speed, MotorDirection direction);
 
     public:
-        void init(uint8_t PWMA, uint8_t PWMB, uint8_t AIN1, uint8_t AIN2,
-                  uint8_t BIN1, uint8_t BIN2, uint8_t STDBY);
+        void init(MotorPins left_pins, MotorPins right_pins,
+                  GPIO_TypeDef* stdby_port, uint16_t stdby_pin);
         void setCorrection(float left_motor_correction, float right_motor_correction);
         void update(float x, float y);
+        int getLeftSpeed() const { return m_left_motor_status.speed; }
+        int getRightSpeed() const { return m_right_motor_status.speed; }
     };
 
 } // namespace Robo

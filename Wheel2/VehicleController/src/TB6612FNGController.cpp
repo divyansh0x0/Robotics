@@ -3,7 +3,7 @@
 //
 
 #include "TB6612FNGController.h"
-#include <Arduino.h>
+#include <math.h>
 
 #define MAX_PWM 255
 // ===== CONFIG =====
@@ -66,51 +66,45 @@ static float expo(float v, float exponent = 2.0f) {
 static void setMotorSignals(Robo::MotorPins motor_pins, Robo::MotorStatus status) {
     switch (status.direction) {
         case Robo::MotorDirection::STOP:
-            digitalWrite(motor_pins.IN1, LOW);
-            digitalWrite(motor_pins.IN2, LOW);
+            HAL_GPIO_WritePin(motor_pins.in1_port, motor_pins.in1_pin, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(motor_pins.in2_port, motor_pins.in2_pin, GPIO_PIN_RESET);
             break;
         case Robo::MotorDirection::BACKWARD:
-            digitalWrite(motor_pins.IN1, LOW);
-            digitalWrite(motor_pins.IN2, HIGH);
+            HAL_GPIO_WritePin(motor_pins.in1_port, motor_pins.in1_pin, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(motor_pins.in2_port, motor_pins.in2_pin, GPIO_PIN_SET);
             break;
         case Robo::MotorDirection::FORWARD:
-            digitalWrite(motor_pins.IN1, HIGH);
-            digitalWrite(motor_pins.IN2, LOW);
+            HAL_GPIO_WritePin(motor_pins.in1_port, motor_pins.in1_pin, GPIO_PIN_SET);
+            HAL_GPIO_WritePin(motor_pins.in2_port, motor_pins.in2_pin, GPIO_PIN_RESET);
             break;
     }
-    analogWrite(motor_pins.PWM, static_cast<int>(round(status.correction * status.speed)));
+    __HAL_TIM_SET_COMPARE(motor_pins.htim, motor_pins.channel, static_cast<int>(round(status.correction * status.speed)));
 }
 
 namespace Robo {
-    void TB6612FNGController::init(const uint8_t PWMA, const uint8_t PWMB, const uint8_t AIN1, const uint8_t AIN2,
-                                   const uint8_t BIN1, const uint8_t BIN2, const uint8_t STDBY) {
-        m_left_motor_pins.PWM  = PWMA;
-        m_left_motor_pins.IN1  = AIN1;
-        m_left_motor_pins.IN2  = AIN2;
+    void TB6612FNGController::init(MotorPins left_pins, MotorPins right_pins, 
+                                   GPIO_TypeDef* stdby_port, uint16_t stdby_pin) {
 
-        m_right_motor_pins.PWM = PWMB;
-        m_right_motor_pins.IN1 = BIN1;
-        m_right_motor_pins.IN2 = BIN2;
+        
+        // Ensure AFIO clock is enabled and TIM2 is strictly unmapped (PA1/PA2 default routing)
+        __HAL_RCC_AFIO_CLK_ENABLE();
+        __HAL_AFIO_REMAP_TIM2_DISABLE();
 
-        m_stdby_pin = STDBY;
+        m_left_motor_pins = left_pins;
+        m_right_motor_pins = right_pins;
+        m_stdby_port = stdby_port;
+        m_stdby_pin = stdby_pin;
 
         m_left_motor_status.direction  = MotorDirection::STOP;
         m_left_motor_status.speed      = 0;
+        m_left_motor_status.correction = 1.0f;
         m_right_motor_status.direction = MotorDirection::STOP;
         m_right_motor_status.speed     = 0;
+        m_right_motor_status.correction= 1.0f;
 
-        pinMode(PWMA,  OUTPUT);
-        pinMode(PWMB,  OUTPUT);
-        pinMode(AIN1,  OUTPUT);
-        pinMode(AIN2,  OUTPUT);
-        pinMode(BIN1,  OUTPUT);
-        pinMode(BIN2,  OUTPUT);
-        pinMode(STDBY, OUTPUT);
-
-        // Drive STDBY HIGH to bring the driver out of standby
-        digitalWrite(STDBY, HIGH);
-
-        Serial.begin(115200);
+        // Note: Pin initialization (GPIO and TIM) is now handled globally by main.c
+        // We only bring the driver out of standby here mathematically, or we can just assert it right away.
+        HAL_GPIO_WritePin(m_stdby_port, m_stdby_pin, GPIO_PIN_SET);
     }
 
     void TB6612FNGController::setCorrection(float left_motor_correction, float right_motor_correction) {
@@ -137,11 +131,7 @@ namespace Robo {
     void TB6612FNGController::update() const {
         setMotorSignals(m_left_motor_pins, m_left_motor_status);
         setMotorSignals(m_right_motor_pins, m_right_motor_status);
-        Serial.print("left:");
-        Serial.print(m_left_motor_status.speed);
-        Serial.print(", right:");
-        Serial.println(m_right_motor_status.speed);
-
+        HAL_GPIO_WritePin(m_stdby_port, m_stdby_pin, GPIO_PIN_SET);
     }
 
     // X = xcos - ysin; Y = xsin - ycos
